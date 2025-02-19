@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JOIEnergy.Domain;
 
 namespace JOIEnergy.Services
@@ -25,6 +26,15 @@ namespace JOIEnergy.Services
             }
 
             electricityReadings.ForEach(electricityReading => MeterAssociatedReadings[smartMeterId].Add(electricityReading));
+        }
+
+        public List<ElectricityReading> GetWeeklyReadings(string smartMeterId, DateTime currentDate)
+        {
+            if (MeterAssociatedReadings.ContainsKey(smartMeterId)) {
+                return MeterAssociatedReadings[smartMeterId]
+                    .Where(reading => reading.Time >= currentDate.AddDays(-7) && reading.Time <= currentDate).ToList();
+            }
+            return new List<ElectricityReading>();
         }
     }
 }

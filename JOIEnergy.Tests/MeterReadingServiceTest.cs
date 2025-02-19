@@ -15,11 +15,6 @@ namespace JOIEnergy.Tests
         public MeterReadingServiceTest()
         {
             meterReadingService = new MeterReadingService(new Dictionary<string, List<ElectricityReading>>());
-
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
-                new ElectricityReading() { Time = DateTime.Now.AddMinutes(-30), Reading = 35m },
-                new ElectricityReading() { Time = DateTime.Now.AddMinutes(-15), Reading = 30m }
-            });
         }
 
         [Fact]
@@ -31,7 +26,9 @@ namespace JOIEnergy.Tests
         public void GivenMeterReadingThatExistsShouldReturnMeterReadings()
         {
             meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
-                new ElectricityReading() { Time = DateTime.Now, Reading = 25m }
+                new() { Time = DateTime.Now, Reading = 25m },
+                new() { Time = DateTime.Now.AddMinutes(-30), Reading = 35m },
+                new() { Time = DateTime.Now.AddMinutes(-15), Reading = 30m }
             });
 
             var electricityReadings = meterReadingService.GetReadings(SMART_METER_ID);
@@ -39,5 +36,23 @@ namespace JOIEnergy.Tests
             Assert.Equal(3, electricityReadings.Count);
         }
 
+        [Fact]
+        public void GivenAPeriodThenMeterReadingShouldReturnWeeklyConsumption()
+        {
+            var currentDate = DateTime.Now; 
+            var readings = new List<ElectricityReading>()
+            {
+                new() { Time = DateTime.Now.AddDays(-10), Reading = 30m },
+                new() { Time = DateTime.Now.AddDays(-7), Reading = 20m },
+                new() { Time = DateTime.Now.AddDays(-5), Reading = 10m },
+                new() { Time = currentDate, Reading = 10m },
+            };
+            
+            meterReadingService.StoreReadings(SMART_METER_ID, readings);
+
+            var result = meterReadingService.GetWeeklyReadings(SMART_METER_ID, currentDate);
+            
+            Assert.Equal(3, result.Count);
+        }
     }
 }
