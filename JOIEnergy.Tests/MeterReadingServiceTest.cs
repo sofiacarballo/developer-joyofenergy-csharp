@@ -8,30 +8,30 @@ namespace JOIEnergy.Tests
 {
     public class MeterReadingServiceTest
     {
-        private static string SMART_METER_ID = "smart-meter-id";
+        private const string SmartMeterId = "smart-meter-id";
 
-        private MeterReadingService meterReadingService;
+        private readonly MeterReadingService _meterReadingService;
 
         public MeterReadingServiceTest()
         {
-            meterReadingService = new MeterReadingService(new Dictionary<string, List<ElectricityReading>>());
+            _meterReadingService = new MeterReadingService(new Dictionary<string, List<ElectricityReading>>());
         }
 
         [Fact]
         public void GivenMeterIdThatDoesNotExistShouldReturnNull() {
-            Assert.Empty(meterReadingService.GetReadings("unknown-id"));
+            Assert.Empty(_meterReadingService.GetReadings("unknown-id"));
         }
 
         [Fact]
         public void GivenMeterReadingThatExistsShouldReturnMeterReadings()
         {
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
+            _meterReadingService.StoreReadings(SmartMeterId, new List<ElectricityReading>() {
                 new() { Time = DateTime.Now, Reading = 25m },
                 new() { Time = DateTime.Now.AddMinutes(-30), Reading = 35m },
                 new() { Time = DateTime.Now.AddMinutes(-15), Reading = 30m }
             });
 
-            var electricityReadings = meterReadingService.GetReadings(SMART_METER_ID);
+            var electricityReadings = _meterReadingService.GetReadings(SmartMeterId);
 
             Assert.Equal(3, electricityReadings.Count);
         }
@@ -48,11 +48,12 @@ namespace JOIEnergy.Tests
                 new() { Time = currentDate, Reading = 10m },
             };
             
-            meterReadingService.StoreReadings(SMART_METER_ID, readings);
+            _meterReadingService.StoreReadings(SmartMeterId, readings);
 
-            var result = meterReadingService.GetWeeklyReadings(SMART_METER_ID, currentDate);
+            var result = _meterReadingService.GetWeeklyReadings(SmartMeterId, currentDate);
             
             Assert.Equal(3, result.Count);
+            Assert.DoesNotContain(new ElectricityReading { Time = DateTime.Now.AddDays(-10), Reading = 30m }, result);
         }
     }
 }
