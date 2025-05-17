@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JOIEnergy.Domain;
 
 namespace JOIEnergy.Services
@@ -7,5 +8,6 @@ namespace JOIEnergy.Services
     {
         List<ElectricityReading> GetReadings(string smartMeterId);
         void StoreReadings(string smartMeterId, List<ElectricityReading> electricityReadings);
+        List<ElectricityReading> GetWeeklyReadings(string smartMeterId, DateTime currentDate);
     }
 }

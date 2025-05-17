@@ -42,5 +42,6 @@ namespace JOIEnergy.Controllers
         public ObjectResult GetReading(string smartMeterId) {
             return new OkObjectResult(_meterReadingService.GetReadings(smartMeterId));
         }
+        
     }
 }
